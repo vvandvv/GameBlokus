@@ -11,39 +11,58 @@ using std::cout; using std::endl;
 #include <string>
 using std::string;
 
+#include <set>
+using std::set;
+
+#include "const_defs.h"
 #include "pane.h"
 
 class Chessman {
 	friend class ChessmanFactory;
 public:
+	class Cmp {
+	public:
+		bool operator()(const vector<Pane> &psl, const vector<Pane> &psr) const {
+			return _calcVal(psl) < _calcVal(psr);
+		}
+	};
+	typedef set<vector<Pane>, Cmp>::iterator FormIter;
+	FormIter begin() const {
+		return mForms.begin();
+	}
+	FormIter end() const {
+		return mForms.end();
+	}
+	typedef set<vector<Pane>, Cmp> FormSet;
+	FormSet mForms;
+public:
 	int chess_id;
-	vector<Pane> mPanes;
+private:
+	vector<Pane> panes;
 	string contact;
 private:
-	Chessman(int cid, const vector<Pane> &pns, const string &ct) : chess_id(cid), mPanes(pns), contact(ct) {}
-public:
-	void showInScreen(int x = 0, int y = 0) const {
-		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
-		CONSOLE_SCREEN_BUFFER_INFO info;
-		GetConsoleScreenBufferInfo(hdl, &info);
-		COORD oxy = info.dwCursorPosition;
-		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_INTENSITY);
-		int index = 0;
-		SHORT ymax = 0;
-		for (auto pn : mPanes) {
-			ymax = pn.y > ymax ? pn.y : ymax;
-			SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + pn.x * 2 + x), (SHORT)(oxy.Y + pn.y + y) });
-			if (contact[index] == '1') {
-				SetConsoleTextAttribute(hdl, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	Chessman(int cid, const vector<Pane> &pns, const string &ct) : chess_id(cid), panes(pns), contact(ct) {
+		vector<Pane> cpn = _getContactPanes();
+		size_t consize = cpn.size();
+		for (size_t cn = 0; cn < consize; ++cn) {
+			_translation(cpn[cn].x, cpn[cn].y);
+			for (size_t trf = 0; trf < 4; ++trf) {
+				mForms.insert(panes);
+				_flip_over();
+				mForms.insert(panes);
+				_flip_over();
+				_rotate();
 			}
-			printf("■");
-			if (contact[index] == '1') {
-				SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_INTENSITY);
-			}
-			++index;
+			_translation(-cpn[cn].x, -cpn[cn].y);
 		}
-		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + ymax + 2 + y) });
+		//cout << mForms.size() << endl;
+	}
+public: // 为了显示的一组函数
+	/**
+	 * 把棋子显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
+	 */
+	void showInScreen(bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) const {
+		Chessman::showInScreen(panes, isVertical, x, y, ex, ey);
 	}
 	Chessman *transform(int trf) {
 		if (trf >= 0 && trf < 8) {
@@ -65,25 +84,48 @@ public:
 				_rotate();
 			}
 		}
-		vector<Pane> cpn = getContactPanes();
+		vector<Pane> cpn = _getContactPanes();
 		if (cn >= 0 && cn < cpn.size()) {
 			_translation(cpn[cn].x, cpn[cn].y);
 		}
 		return this;
 	}
-	vector<Pane> getContactPanes() const {
-		vector<Pane> res;
-		for (int ii = 0; ii < mPanes.size(); ++ii) {
-			if (contact[ii] == '1') {
-				res.push_back(mPanes[ii]);
+public:
+	static void showInScreen(const vector<Pane> &pns, bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) {
+		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO info;
+		GetConsoleScreenBufferInfo(hdl, &info);
+		COORD oxy = info.dwCursorPosition;
+		SetConsoleTextAttribute(hdl, BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+		for (size_t i = 0; i < ex; ++i) {
+			for (size_t j = 0; j < ey; ++j) {
+				printf("■");
 			}
+			printf("\n");
 		}
-		return res;
+		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		int index = 0;
+		for (auto pn : pns) {
+			BOOL res = SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (pn.x + x) * 2), (SHORT)(oxy.Y - pn.y + y) });
+			//BOOL res = SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (pn.x + x) * 2), (SHORT)(oxy.Y + pn.y + y) });
+			if (!pn.x && !pn.y) {
+				SetConsoleTextAttribute(hdl, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			}
+			if (res) {
+				printf("■");
+			}
+			if (!pn.x && !pn.y) {
+				SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_INTENSITY);
+			}
+			++index;
+		}
+		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (isVertical ? 0 : ex) * 2), (SHORT)(oxy.Y + (isVertical ? ey : 0)) });
 	}
 private:
 	void _rotate() {
 		int x, y;
-		for (auto &pn : mPanes) {
+		for (auto &pn : panes) {
 			x = pn.x;
 			y = pn.y;
 			pn.x = -y;
@@ -92,15 +134,34 @@ private:
 	}
 	void _flip_over() {
 		int x, y;
-		for (auto &pn : mPanes) {
+		for (auto &pn : panes) {
 			pn.x = -pn.x;
 		}
 	}
 	void _translation(int x, int y) {
-		for (auto &pn : mPanes) {
+		for (auto &pn : panes) {
 			pn.x -= x;
 			pn.y -= y;
 		}
+	}
+	vector<Pane> _getContactPanes() const {
+		vector<Pane> res;
+		if (res.size() == 0) {
+			for (int ii = 0; ii < panes.size(); ++ii) {
+				if (contact[ii] == '1') {
+					res.push_back(panes[ii]);
+				}
+			}
+		}
+		return res;
+	}
+	static int _calcVal(const vector<Pane> &pns) {
+		size_t len = pns.size();
+		int sum = 0;
+		for (size_t i = 0; i < len; ++i) {
+			sum += pns[i].x + pns[i].y * ConstDefs::GAME_BOARD_WIDTH;
+		}
+		return sum;
 	}
 };
 

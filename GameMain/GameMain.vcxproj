@@ -143,7 +143,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\chessbox.h" />
     <ClInclude Include="include\chessman.h" />
+    <ClInclude Include="include\const_defs.h" />
+    <ClInclude Include="include\game_board.h" />
     <ClInclude Include="include\pane.h" />
   </ItemGroup>
   <ItemGroup>
