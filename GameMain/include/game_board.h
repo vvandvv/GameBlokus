@@ -12,7 +12,7 @@ private:
 public:
 	void putChessAt(int pid, const Chessman *chess, const Chessman::FormIter &form, int x, int y) {
 		for (const Pane &pn : *form) {
-			mMap[pn.x][pn.y] = pid;
+			mMap[pn.x + x][pn.y + y] = pid;
 		}
 	}
 public:
@@ -21,7 +21,7 @@ public:
 		for (Chessman::FormIter fit = chess->begin(); fit != chess->end(); ++fit) {
 			bool canput = true;
 			for (const Pane &pn : *fit) {
-				if (!isValid(pid, pn)) {
+				if (!isValid(pid, pn.x + x, pn.y + y)) {
 					canput = false;
 					break;
 				}
@@ -39,6 +39,24 @@ public:
 			bool common = false;
 			for (int i = 0; i < 4; ++i) {
 				int tx = pn.x + dirx[i], ty = pn.y + diry[i];
+				if (isInMap(tx, ty) && mMap[tx][ty] == pid) {
+					common = true;
+					break;
+				}
+			}
+			if (!common) {
+				res = true;
+			}
+		}
+		return res;
+	}
+	bool isValid(int pid, int x, int y) const {
+		bool res = false;
+		bool inmap = isInMap(x, y);
+		if (inmap) {
+			bool common = false;
+			for (int i = 0; i < 4; ++i) {
+				int tx = x + dirx[i], ty = y + diry[i];
 				if (isInMap(tx, ty) && mMap[tx][ty] == pid) {
 					common = true;
 					break;

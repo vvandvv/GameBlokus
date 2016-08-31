@@ -17,12 +17,12 @@ int main()
 			printf("\n");
 		}
 		printf("fit forms:\n");
-		Chessman::FormSet fs = gb.getValidForms(1, *chess_iter, 0, 0);
+		Chessman::FormSet fs = gb.getValidForms(1, *chess_iter, 19, 19);
 		for (Chessman::FormIter form_iter = fs.begin(); form_iter != fs.end(); ++form_iter) {
 			Chessman::showInScreen(*form_iter);
 			printf("\n");
 		}
-		gb.putChessAt(1, *chess_iter, fs.begin(), 0, 0);
+		gb.putChessAt(1, *chess_iter, fs.begin(), 19, 19);
 		gb.showInScreen();
 		cin.get();
 	}
