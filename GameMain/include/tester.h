@@ -3,6 +3,8 @@
 #include "game_board.h"
 #include "chessbox.h"
 
+#include "player.h"
+
 class Tester {
 public:
 	static void putAllChessAtMap(int pid, int x = 19, int y = 19) {
@@ -35,6 +37,23 @@ public:
 			pos = gb.getAvailablePoints(pid);
 			gb.showPosInScreen(pid, pos);
 			printf("%d\n", cb.getChessNum());
+		}
+	}
+	static void playersAct(int thn) {
+		GameBoard *gb = new GameBoard();
+		Player pl1(1, gb, { 0, 0 });
+		Player pl2(2, gb, { 0, 19 });
+		Player pl3(3, gb, { 19, 19 });
+		Player pl4(4, gb, { 19, 0 });
+		for (int i = 0; i < thn; ++i) {
+			pl1.putChess();
+			_sleep(1000);
+			pl2.putChess();
+			_sleep(1000);
+			pl3.putChess();
+			_sleep(1000);
+			pl4.putChess();
+			_sleep(1000);
 		}
 	}
 };

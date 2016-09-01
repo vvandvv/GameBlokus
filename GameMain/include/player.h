@@ -4,18 +4,28 @@
 #include "chessbox.h"
 
 class Player {
-public:
+	ChessBox *chess_box;
 	int player_id;
-	GameBoard *mGameBoard;
-	ChessBox *mChessBox;
+	Point birth_place;
 public:
-	void putChess(int hn) const {
-		mGameBoard->showInScreen();
-		printf("\n");
-		vector<Point> pos = mGameBoard->getAvailablePoints(player_id);
+	GameBoard *mGameBoard;
+public:
+	Player(int pid, GameBoard *gb, const Point &pt) : player_id(pid), mGameBoard(gb), birth_place(pt), chess_box(new ChessBox()) {}
+public:
+	vector<Point> getAvailablePoints() const {
+		vector<Point> res;
+		if (chess_box->getChessNum() == ConstDefs::CHESSMAN_TOTAL) {
+			res.push_back(birth_place);
+		} else {
+			res = mGameBoard->getAvailablePoints(player_id);
+		}
+		return res;
+	}
+	void putChess() const {
+		vector<Point> pos = getAvailablePoints();
 		size_t posl;
 		Chessman::FormSet fs;
-		for (ChessBox::ChessIter chess_iter = mChessBox->begin(); chess_iter != mChessBox->end(); ) {
+		for (ChessBox::ChessIter chess_iter = chess_box->begin(); chess_iter != chess_box->end(); ) {
 			size_t plen = pos.size();
 			size_t i;
 			for (i = 0; i < plen; ++i) {
@@ -29,7 +39,7 @@ public:
 				continue;
 			}
 			mGameBoard->putChessAt(player_id, *chess_iter, fs.begin(), pos[i].x, pos[i].y);
-			mChessBox->removeChess(chess_iter);
+			chess_box->removeChess(chess_iter);
 			mGameBoard->showInScreen();
 			printf("\n");
 			break;

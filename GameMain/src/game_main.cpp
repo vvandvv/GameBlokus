@@ -5,6 +5,7 @@ using std::cin; using std::cout; using std::endl;
 
 int main()
 {
-	Tester::putAllChessAtMap(1);
+	//Tester::putAllChessAtMap(1);
+	Tester::playersAct(10);
 	cin.get();
 }
