@@ -21,4 +21,11 @@ public:
 			mChesses.insert(ChessmanFactory::createChessman(i));
 		}
 	}
+public:
+	void removeChess(const ChessIter &iter) {
+		mChesses.erase(iter);
+	}
+	size_t getChessNum() const {
+		return mChesses.size();
+	}
 };

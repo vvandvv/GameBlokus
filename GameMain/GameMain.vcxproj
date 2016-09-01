@@ -149,6 +149,7 @@
     <ClInclude Include="include\game_board.h" />
     <ClInclude Include="include\pane.h" />
     <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\tester.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game_main.cpp" />

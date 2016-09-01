@@ -34,7 +34,7 @@ public:
 	}
 	bool isValid(int pid, int x, int y) const {
 		bool res = false;
-		bool inmap = isInMap(x, y);
+		bool inmap = isInMap(x, y) && mMap[x][y] == 0;
 		if (inmap) {
 			bool common = false;
 			for (int i = 0; i < 4; ++i) {
