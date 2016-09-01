@@ -24,6 +24,8 @@ int main()
 		}
 		gb.putChessAt(1, *chess_iter, fs.begin(), 19, 19);
 		gb.showInScreen();
+		vector<Point> res = gb.getAvailablePoints(1);
+		gb.showPosInScreen(1, res);
 		cin.get();
 	}
 	cin.get();

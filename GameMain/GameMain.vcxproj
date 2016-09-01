@@ -148,6 +148,7 @@
     <ClInclude Include="include\const_defs.h" />
     <ClInclude Include="include\game_board.h" />
     <ClInclude Include="include\pane.h" />
+    <ClInclude Include="include\player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game_main.cpp" />

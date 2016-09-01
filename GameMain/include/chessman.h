@@ -75,7 +75,7 @@ public: // 为了显示的一组函数
 		}
 		return this;
 	}
-	Chessman *transformAt(int trf, int cn) {
+	Chessman *transformAt(int trf, size_t cn) {
 		if (trf >= 0 && trf < 8) {
 			if (trf >= 4) {
 				_flip_over();

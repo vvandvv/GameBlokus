@@ -32,24 +32,6 @@ public:
 		}
 		return res;
 	}
-	bool isValid(int pid, const Pane &pn) const {
-		bool res = false;
-		bool inmap = isInMap(pn.x, pn.y);
-		if (inmap) {
-			bool common = false;
-			for (int i = 0; i < 4; ++i) {
-				int tx = pn.x + dirx[i], ty = pn.y + diry[i];
-				if (isInMap(tx, ty) && mMap[tx][ty] == pid) {
-					common = true;
-					break;
-				}
-			}
-			if (!common) {
-				res = true;
-			}
-		}
-		return res;
-	}
 	bool isValid(int pid, int x, int y) const {
 		bool res = false;
 		bool inmap = isInMap(x, y);
@@ -68,10 +50,40 @@ public:
 		}
 		return res;
 	}
+	bool isHorn(int pid, int x, int y) const {
+		bool res = false;
+		bool inmap = isInMap(x, y);
+		if (inmap) {
+			bool horn = false;
+			for (int i = 4; i < 8; ++i) {
+				int tx = x + dirx[i], ty = y + diry[i];
+				if (isInMap(tx, ty) && mMap[tx][ty] == pid) {
+					horn = true;
+					break;
+				}
+			}
+			if (horn) {
+				res = true;
+			}
+		}
+		return res;
+	}
 	bool isInMap(int x, int y) const {
 		return x >= 0 && x < ConstDefs::GAME_BOARD_WIDTH && y >= 0 && y < ConstDefs::GAME_BOARD_WIDTH;
 	}
 public:
+	vector<Point> getAvailablePoints(int pid) const {
+		vector<Point> res;
+		for (size_t i = 0; i < ConstDefs::GAME_BOARD_WIDTH; ++i) {
+			for (size_t j = 0; j < ConstDefs::GAME_BOARD_WIDTH; ++j) {
+				if (isValid(pid, i, j) && isHorn(pid, i, j)) {
+					res.push_back(Point(i, j));
+				}
+			}
+		}
+		return res;
+	}
+public: //ÏÔÊ¾µ½ÆÁÄ»
 	void showInScreen(int x = 0, int y = 0) const {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -93,6 +105,19 @@ public:
 			}
 		}
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + j + 2 + y) });
+		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + ConstDefs::GAME_BOARD_WIDTH + 2 + y) });
+	}
+	void showPosInScreen(int pid, const vector<Point> &pts, int x = 0, int y = 0) const {
+		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO info;
+		GetConsoleScreenBufferInfo(hdl, &info);
+		COORD oxy = info.dwCursorPosition;
+		showInScreen(x, y);
+		for (const Point &pt : pts) {
+			SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (pt.x + 1) * 2 + x), (SHORT)(oxy.Y + (ConstDefs::GAME_BOARD_WIDTH - pt.y) + y) });
+			printf("  ");
+		}
+		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + ConstDefs::GAME_BOARD_WIDTH + 2 + y) });
 	}
 };
