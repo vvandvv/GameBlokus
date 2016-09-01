@@ -4,11 +4,10 @@
 #include "chessman.h"
 
 class GameBoard {
-public:
-	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH] = { 0 };
-private:
 	const int dirx[8] = { 1, -1,  0,  0,  1, -1,  1, -1 };
 	const int diry[8] = { 0,  0,  1, -1, -1,  1,  1, -1 };
+public:
+	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH] = { 0 };
 public:
 	void putChessAt(int pid, const Chessman *chess, const Chessman::FormIter &form, int x, int y) {
 		for (const Pane &pn : *form) {
@@ -107,7 +106,7 @@ public: //œ‘ æµΩ∆¡ƒª
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + ConstDefs::GAME_BOARD_WIDTH + 2 + y) });
 	}
-	void showPosInScreen(int pid, const vector<Point> &pts, int x = 0, int y = 0) const {
+	void showPosInScreen(const vector<Point> &pts, int x = 0, int y = 0) const {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
 		GetConsoleScreenBufferInfo(hdl, &info);

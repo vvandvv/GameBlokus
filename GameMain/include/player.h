@@ -4,13 +4,13 @@
 #include "chessbox.h"
 
 class Player {
-	ChessBox *chess_box;
-	int player_id;
-	Point birth_place;
+	ChessBox *const chess_box = new ChessBox();
+	const int player_id;
+	const Point birth_place;
 public:
 	GameBoard *mGameBoard;
 public:
-	Player(int pid, GameBoard *gb, const Point &pt) : player_id(pid), mGameBoard(gb), birth_place(pt), chess_box(new ChessBox()) {}
+	Player(int pid, GameBoard *gb, const Point &pt) : player_id(pid), mGameBoard(gb), birth_place(pt) {}
 public:
 	vector<Point> getAvailablePoints() const {
 		vector<Point> res;

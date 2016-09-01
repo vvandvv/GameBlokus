@@ -35,7 +35,7 @@ public:
 			gb.showInScreen();
 			printf("\n");
 			pos = gb.getAvailablePoints(pid);
-			gb.showPosInScreen(pid, pos);
+			gb.showPosInScreen(pos);
 			printf("%d\n", cb.getChessNum());
 		}
 	}
@@ -55,5 +55,6 @@ public:
 			pl4.putChess();
 			_sleep(1000);
 		}
+		delete gb;
 	}
 };
