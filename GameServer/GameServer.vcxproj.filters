@@ -14,32 +14,34 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Header Files\jsoncpp">
-      <UniqueIdentifier>{9f8e6306-f34a-4e7e-8ad0-dba545077832}</UniqueIdentifier>
+      <UniqueIdentifier>{44650c37-6865-4082-8498-7ab86a85a563}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\jsoncpp">
-      <UniqueIdentifier>{0f9a9328-572d-4558-953a-da4979e6b463}</UniqueIdentifier>
+      <UniqueIdentifier>{a5fa13c8-cf98-4035-95d2-9b950bf43f17}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\chessman.h">
+    <ClCompile Include="src\game_server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_value.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\socketman.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\pane.h">
+    <ClInclude Include="include\game_host.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\chessbox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\game_board.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\const_defs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tester.h">
+    <ClInclude Include="include\team_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\third_party\jsoncpp\include\json\allocator.h">
@@ -75,19 +77,5 @@
     <ClInclude Include="..\third_party\jsoncpp\include\json\writer.h">
       <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\game_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_value.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

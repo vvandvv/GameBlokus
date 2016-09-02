@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2639455-591B-46AA-AC16-EB8340003701}</ProjectGuid>
+    <ProjectGuid>{6FAAF2D4-EDB2-4A5C-8023-09DAAD186CBA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GameMain</RootNamespace>
+    <RootNamespace>GameServer</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -143,6 +143,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp" />
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_value.cpp" />
+    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp" />
+    <ClCompile Include="src\game_server.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\third_party\jsoncpp\include\json\allocator.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\assertions.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\autolink.h" />
@@ -154,19 +160,9 @@
     <ClInclude Include="..\third_party\jsoncpp\include\json\value.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\version.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\writer.h" />
-    <ClInclude Include="include\chessbox.h" />
-    <ClInclude Include="include\chessman.h" />
-    <ClInclude Include="include\const_defs.h" />
-    <ClInclude Include="include\game_board.h" />
-    <ClInclude Include="include\pane.h" />
-    <ClInclude Include="include\player.h" />
-    <ClInclude Include="include\tester.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp" />
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_value.cpp" />
-    <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp" />
-    <ClCompile Include="src\game_main.cpp" />
+    <ClInclude Include="include\game_host.h" />
+    <ClInclude Include="include\socketman.h" />
+    <ClInclude Include="include\team_info.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
