@@ -4,7 +4,6 @@
 #include "chessman.h"
 
 class ChessBox {
-	int player_id;
 public:
 	typedef set<Chessman*>::iterator ChessIter;
 	ChessIter begin() const {

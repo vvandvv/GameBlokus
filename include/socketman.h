@@ -3,6 +3,8 @@
 #include <winsock2.h>
 #pragma comment(lib,"ws2_32.lib")
 
+#include "message.h"
+
 class Socketman {
 public:
 	static SOCKET createServerSocket(const char *ip, u_short port) {
@@ -54,11 +56,21 @@ public:
 		printf("Client is connected to server.\n");
 		return sClient;
 	}
-	static void destroyServerSocket(SOCKET socket) {
+	static void destroySocket(SOCKET socket) {
 		if (socket != INVALID_SOCKET) {
 			closesocket(socket);
 		}
 		WSACleanup();
+	}
+public:
+	static void sendMessage(const Message &msg, SOCKET socket) {
+		Json::Value jv = msg.toJsonObj();
+		string json_msg = jv.toStyledString();
+		int len = json_msg.length();
+		char *buf = (char*)malloc(len + 1 + ConstDefs::MSG_HEADER_LENGTH);
+		sprintf(buf, "%05d%s", len, json_msg.c_str());
+		send(socket, buf, strlen(buf), 0);
+		free(buf);
 	}
 private:
 	~Socketman() {}

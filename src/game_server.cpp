@@ -5,10 +5,11 @@ using std::cout; using std::endl; using std::cin;
 #include "socketman.h"
 
 int main() {
-	cout << "hello" << endl;
 	GameHost gh("127.0.0.1", 6000);
 	gh.acceptTeams();
-	gh.gameStart();
-	gh.gameOver();
+	gh.startGame();
+	gh.runGame();
+	gh.stopGame();
+	cin.get();
 	return 0;
 }

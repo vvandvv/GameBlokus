@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\game_server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp">
       <Filter>Source Files\jsoncpp</Filter>
     </ClCompile>
@@ -33,17 +30,14 @@
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp">
       <Filter>Source Files\jsoncpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\message.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game_server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\socketman.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\game_host.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\team_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\third_party\jsoncpp\include\json\allocator.h">
       <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
@@ -76,6 +70,24 @@
     </ClInclude>
     <ClInclude Include="..\third_party\jsoncpp\include\json\writer.h">
       <Filter>Header Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\const_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\game_host.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\message.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\socketman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\team_info.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,54 +15,59 @@ using std::string;
 using std::set;
 
 #include "const_defs.h"
-#include "pane.h"
+#include "point.h"
 
 class Chessman {
 	friend class ChessmanFactory;
 public:
 	class Cmp {
+		static int _calcVal(const Shape &sps) {
+			int sum = 0;
+			for (const Point &pt : sps) {
+				sum += pt.x + pt.y * ConstDefs::GAME_BOARD_WIDTH;
+			}
+			return sum;
+		}
 	public:
-		bool operator()(const vector<Pane> &psl, const vector<Pane> &psr) const {
-			return _calcVal(psl) < _calcVal(psr);
+		bool operator()(const Shape &spl, const Shape &spr) const {
+			return _calcVal(spl) < _calcVal(spr);
 		}
 	};
-	typedef set<vector<Pane>, Cmp>::iterator FormIter;
-	FormIter begin() const {
-		return mForms.begin();
+	typedef set<Shape, Cmp>::iterator ShapeIter;
+	ShapeIter begin() const {
+		return mShapes.begin();
 	}
-	FormIter end() const {
-		return mForms.end();
+	ShapeIter end() const {
+		return mShapes.end();
 	}
-	typedef set<vector<Pane>, Cmp> FormSet;
-	FormSet mForms;
+	typedef set<Shape, Cmp> ShapeSet;
+	ShapeSet mShapes;
 public:
 	int chess_id;
-private:
-	vector<Pane> panes;
+	Points points;
 	string contact;
 private:
-	Chessman(int cid, const vector<Pane> &pns, const string &ct) : chess_id(cid), panes(pns), contact(ct) {
-		vector<Pane> cpn = _getContactPanes();
-		size_t consize = cpn.size();
-		for (size_t cn = 0; cn < consize; ++cn) {
-			_translation(cpn[cn].x, cpn[cn].y);
+	Chessman(int cid, const Points &pts, const string &ct) : chess_id(cid), points(pts), contact(ct) {
+		Points cps = _getContactPoints();
+		for (const Point &cp : cps) {
+			_translation(cp.x, cp.y);
 			for (size_t trf = 0; trf < 4; ++trf) {
-				mForms.insert(panes);
+				mShapes.insert(points);
 				_flip_over();
-				mForms.insert(panes);
+				mShapes.insert(points);
 				_flip_over();
 				_rotate();
 			}
-			_translation(-cpn[cn].x, -cpn[cn].y);
+			_translation(-cp.x, -cp.y);
 		}
-		//cout << mForms.size() << endl;
+		//cout << mShapes.size() << endl;
 	}
 public: // 为了显示的一组函数
 	/**
 	 * 把棋子显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
 	 */
 	void showInScreen(bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) const {
-		Chessman::showInScreen(panes, isVertical, x, y, ex, ey);
+		Chessman::showInScreen(points, isVertical, x, y, ex, ey);
 	}
 	Chessman *transform(int trf) {
 		if (trf >= 0 && trf < 8) {
@@ -84,14 +89,17 @@ public: // 为了显示的一组函数
 				_rotate();
 			}
 		}
-		vector<Pane> cpn = _getContactPanes();
+		static Points cpn = _getContactPoints();
 		if (cn >= 0 && cn < cpn.size()) {
 			_translation(cpn[cn].x, cpn[cn].y);
 		}
 		return this;
 	}
 public:
-	static void showInScreen(const vector<Pane> &pns, bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) {
+	/**
+	 * 把一些点显示在 （ex, ey） 的棋盘上，原点位置在 （x，y）点
+	 */
+	static void showInScreen(const Points &pns, bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
 		GetConsoleScreenBufferInfo(hdl, &info);
@@ -122,10 +130,10 @@ public:
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (isVertical ? 0 : ex) * 2), (SHORT)(oxy.Y + (isVertical ? ey : 0)) });
 	}
-private:
+private: //变换需要的基本函数，对自身 points 做变换
 	void _rotate() {
 		int x, y;
-		for (auto &pn : panes) {
+		for (auto &pn : points) {
 			x = pn.x;
 			y = pn.y;
 			pn.x = -y;
@@ -134,34 +142,26 @@ private:
 	}
 	void _flip_over() {
 		int x, y;
-		for (auto &pn : panes) {
+		for (auto &pn : points) {
 			pn.x = -pn.x;
 		}
 	}
 	void _translation(int x, int y) {
-		for (auto &pn : panes) {
+		for (auto &pn : points) {
 			pn.x -= x;
 			pn.y -= y;
 		}
 	}
-	vector<Pane> _getContactPanes() const {
-		vector<Pane> res;
+	Shape _getContactPoints() const {
+		static Shape res;
 		if (res.size() == 0) {
-			for (int ii = 0; ii < panes.size(); ++ii) {
+			for (int ii = 0; ii < points.size(); ++ii) {
 				if (contact[ii] == '1') {
-					res.push_back(panes[ii]);
+					res.push_back(points[ii]);
 				}
 			}
 		}
 		return res;
-	}
-	static int _calcVal(const vector<Pane> &pns) {
-		size_t len = pns.size();
-		int sum = 0;
-		for (size_t i = 0; i < len; ++i) {
-			sum += pns[i].x + pns[i].y * ConstDefs::GAME_BOARD_WIDTH;
-		}
-		return sum;
 	}
 };
 

@@ -4,6 +4,8 @@
 #include "chessbox.h"
 
 #include "player.h"
+#include "team_info.h"
+#include "message.h"
 
 class Tester {
 public:
@@ -15,12 +17,12 @@ public:
 		vector<Point> pos;
 		pos.push_back({ x, y });
 		size_t posl;
-		Chessman::FormSet fs;
+		Chessman::ShapeSet fs;
 		for (ChessBox::ChessIter chess_iter = cb.begin(); chess_iter != cb.end(); ) {
 			size_t plen = pos.size();
 			size_t i;
 			for (i = 0; i < plen; ++i) {
-				fs = gb.getValidForms(pid, *chess_iter, pos[i].x, pos[i].y);
+				fs = gb.getValidShapes(pid, *chess_iter, pos[i].x, pos[i].y);
 				if (!fs.empty()) {
 					break;
 				}
@@ -56,5 +58,10 @@ public:
 			_sleep(1000);
 		}
 		delete gb;
+	}
+	static void registTeam() {
+		TeamInfo *ti = new TeamInfo("god", 1001);
+		string msg = MsgRegist(ti).toJsonObj().toStyledString();
+		printf("%s\n", msg.c_str());
 	}
 };

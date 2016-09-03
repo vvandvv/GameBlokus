@@ -9,17 +9,17 @@ class GameBoard {
 public:
 	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH] = { 0 };
 public:
-	void putChessAt(int pid, const Chessman *chess, const Chessman::FormIter &form, int x, int y) {
-		for (const Pane &pn : *form) {
-			mMap[pn.x + x][pn.y + y] = pid;
+	void putChessAt(int pid, const Chessman *chess, const Chessman::ShapeIter &shape, int x, int y) {
+		for (const Point &pt : *shape) {
+			mMap[pt.x + x][pt.y + y] = pid;
 		}
 	}
 public:
-	Chessman::FormSet getValidForms(int pid, const Chessman *chess, int x, int y) const {
-		Chessman::FormSet res;
-		for (Chessman::FormIter fit = chess->begin(); fit != chess->end(); ++fit) {
+	Chessman::ShapeSet getValidShapes(int pid, const Chessman *chess, int x, int y) const {
+		Chessman::ShapeSet res;
+		for (Chessman::ShapeIter fit = chess->begin(); fit != chess->end(); ++fit) {
 			bool canput = true;
-			for (const Pane &pn : *fit) {
+			for (const Point &pn : *fit) {
 				if (!isValid(pid, pn.x + x, pn.y + y)) {
 					canput = false;
 					break;
@@ -71,8 +71,8 @@ public:
 		return x >= 0 && x < ConstDefs::GAME_BOARD_WIDTH && y >= 0 && y < ConstDefs::GAME_BOARD_WIDTH;
 	}
 public:
-	vector<Point> getAvailablePoints(int pid) const {
-		vector<Point> res;
+	Points getAvailablePoints(int pid) const {
+		Points res;
 		for (size_t i = 0; i < ConstDefs::GAME_BOARD_WIDTH; ++i) {
 			for (size_t j = 0; j < ConstDefs::GAME_BOARD_WIDTH; ++j) {
 				if (isValid(pid, i, j) && isHorn(pid, i, j)) {
@@ -82,7 +82,10 @@ public:
 		}
 		return res;
 	}
-public: //显示到屏幕
+public:
+	/**
+	 * 显示棋盘到屏幕的（x, y）位置
+	 */
 	void showInScreen(int x = 0, int y = 0) const {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -106,6 +109,9 @@ public: //显示到屏幕
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		SetConsoleCursorPosition(hdl, { oxy.X, (SHORT)(oxy.Y + ConstDefs::GAME_BOARD_WIDTH + 2 + y) });
 	}
+	/**
+	 * 在以（x, y）位置开始的棋盘上，显示一些点
+	 */
 	void showPosInScreen(const vector<Point> &pts, int x = 0, int y = 0) const {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;

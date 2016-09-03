@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./include/;./../third_party/jsoncpp/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../include/;./../third_party/jsoncpp/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,12 +143,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\game_server.cpp" />
+    <ClCompile Include="..\src\message.cpp" />
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp" />
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_value.cpp" />
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_writer.cpp" />
-    <ClCompile Include="src\game_server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\const_defs.h" />
+    <ClInclude Include="..\include\game_host.h" />
+    <ClInclude Include="..\include\message.h" />
+    <ClInclude Include="..\include\point.h" />
+    <ClInclude Include="..\include\socketman.h" />
+    <ClInclude Include="..\include\team_info.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\allocator.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\assertions.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\autolink.h" />
@@ -160,9 +167,6 @@
     <ClInclude Include="..\third_party\jsoncpp\include\json\value.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\version.h" />
     <ClInclude Include="..\third_party\jsoncpp\include\json\writer.h" />
-    <ClInclude Include="include\game_host.h" />
-    <ClInclude Include="include\socketman.h" />
-    <ClInclude Include="include\team_info.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

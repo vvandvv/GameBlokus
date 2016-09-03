@@ -4,19 +4,20 @@
 
 #include "json\json.h"
 
+#include "const_defs.h"
 #include "team_info.h"
 #include "socketman.h"
+#include "message.h"
 
 class GameHost {
-	enum ConstDefs { CONNECTION_POOL_SIZE = 2, REGISTER_MSG_LENGTH = 100, MSG_HEADER_LENGTH = 5 };
 public:
 	SOCKET mServer;
-	SOCKET mSockets[CONNECTION_POOL_SIZE] = { 0 };
-	TeamInfo mTeams[CONNECTION_POOL_SIZE];
+	SOCKET mSockets[ConstDefs::CONNECTION_POOL_SIZE] = { 0 };
+	TeamInfo *mTeams[ConstDefs::CONNECTION_POOL_SIZE] = { nullptr };
 private:
 	int last_index = 0;
 	Json::Reader reader;
-	char msg_header_buf[MSG_HEADER_LENGTH];
+	char msg_header_buf[ConstDefs::MSG_HEADER_LENGTH];
 public:
 	void acceptTeams() {
 		Json::Value root;
@@ -33,10 +34,13 @@ public:
 			char *receiveMessage = (char*)malloc(len + 1);
 			int ret = recv(acc, receiveMessage, len, 0);
 			receiveMessage[len] = '\0';
-			if (ret == len) {
-				root.clear();
-				reader.parse(receiveMessage, root, false);
-				mTeams[last_index] = TeamInfo::perseFromJson(root["msg_info"]);
+			if (ret != len) {
+				continue;
+			}
+			root.clear();
+			reader.parse(receiveMessage, root, false);
+			if (root["msg_name"].asString() == "registration") {
+				mTeams[last_index] = TeamInfo::perseFromJson(root["msg_data"]);
 				mSockets[last_index] = acc;
 				++last_index;
 				printf("receive message:%s\n", root.toStyledString().c_str());
@@ -44,21 +48,32 @@ public:
 		}
 	}
 	void dropTeam(int index) {
-		if (index >= 0 && index < CONNECTION_POOL_SIZE) {
+		if (index >= 0 && index < ConstDefs::CONNECTION_POOL_SIZE) {
 			closesocket(mSockets[index]);
 			mSockets[index] = 0;
 		}
 	}
 	bool canAcceptClient() const {
-		return last_index < CONNECTION_POOL_SIZE;
+		return last_index < ConstDefs::CONNECTION_POOL_SIZE;
 	}
-	void gameStart() const {}
-	void gameOver() const {}
+	void startGame() const {
+		for (SOCKET sk : mSockets) {
+			Socketman::sendMessage(MsgGameStart(mTeams), sk);
+		}
+	}
+	void runGame() const {
+		//依次询问
+		//收消息，超时 500ms
+		//依次通知
+	}
+	void stopGame() const {
+		//依次发出停止消息
+	}
 public:
 	GameHost(const string &ip, int port) {
 		mServer = Socketman::createServerSocket(ip.c_str(), (u_short)port);
 	}
 	~GameHost() {
-		Socketman::destroyServerSocket(mServer);
+		Socketman::destroySocket(mServer);
 	}
 };
