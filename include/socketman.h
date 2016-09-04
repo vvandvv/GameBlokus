@@ -6,6 +6,12 @@
 #include "message.h"
 
 class Socketman {
+	static char msg_header_buf[ConstDefs::MSG_HEADER_LENGTH];
+	static Json::Reader reader;
+	static Json::Value root;
+	static MsgError msg_wc;
+	static MsgRegist msg_reg;
+	static MsgAction msg_act;
 public:
 	static SOCKET createServerSocket(const char *ip, u_short port) {
 		WSADATA wsaData;
@@ -71,6 +77,31 @@ public:
 		sprintf(buf, "%05d%s", len, json_msg.c_str());
 		send(socket, buf, strlen(buf), 0);
 		free(buf);
+	}
+	static const Message *recvMessage(SOCKET socket) {
+		int msglen = recv(socket, msg_header_buf, sizeof(msg_header_buf), 0);
+		if (msglen == -1) {
+			return new MsgError("msg receive timeout.");
+		}
+		int len = atoi(msg_header_buf);
+		char *receiveMessage = (char*)malloc(len + 1);
+		int ret = recv(socket, receiveMessage, len, 0);
+		receiveMessage[len] = '\0';
+		if (ret != len) {
+			return new MsgError("msg length not match.");
+		}
+		root.clear();
+		reader.parse(receiveMessage, root, false);
+		string msg_name = root["msg_name"].asString();
+		if (msg_name == "registration") {
+			return new MsgRegist(root["msg_data"]);
+		}
+		else if (msg_name == "action") {
+			return new MsgAction(root["msg_data"], root["msg_data"]["chessman"]);
+		}
+		else {
+			return new MsgError("unknown message.");
+		}
 	}
 private:
 	~Socketman() {}

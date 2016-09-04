@@ -63,9 +63,7 @@ private:
 		//cout << mShapes.size() << endl;
 	}
 public: // 为了显示的一组函数
-	/**
-	 * 把棋子显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
-	 */
+	//把棋子显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
 	void showInScreen(bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) const {
 		Chessman::showInScreen(points, isVertical, x, y, ex, ey);
 	}
@@ -96,9 +94,7 @@ public: // 为了显示的一组函数
 		return this;
 	}
 public:
-	/**
-	 * 把一些点显示在 （ex, ey） 的棋盘上，原点位置在 （x，y）点
-	 */
+	//把一些点显示在 （ex, ey） 的棋盘上，原点位置在 （x，y）点
 	static void showInScreen(const Points &pns, bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -130,7 +126,8 @@ public:
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (isVertical ? 0 : ex) * 2), (SHORT)(oxy.Y + (isVertical ? ey : 0)) });
 	}
-private: //变换需要的基本函数，对自身 points 做变换
+private: 
+	//对自身 points 做变换，逆时针旋转 90 度
 	void _rotate() {
 		int x, y;
 		for (auto &pn : points) {
@@ -140,18 +137,21 @@ private: //变换需要的基本函数，对自身 points 做变换
 			pn.y = x;
 		}
 	}
+	//对自身 points 做变换，左右翻转
 	void _flip_over() {
 		int x, y;
 		for (auto &pn : points) {
 			pn.x = -pn.x;
 		}
 	}
+	//对自身 points 做变换，平移到
 	void _translation(int x, int y) {
 		for (auto &pn : points) {
 			pn.x -= x;
 			pn.y -= y;
 		}
 	}
+private:
 	Shape _getContactPoints() const {
 		static Shape res;
 		if (res.size() == 0) {
@@ -162,6 +162,15 @@ private: //变换需要的基本函数，对自身 points 做变换
 			}
 		}
 		return res;
+	}
+public:
+	static Chessman *perseFromJson(const Json::Value &jv) {
+		Points pts;
+		Json::Value jva = jv["squareness"];
+		for (const Json::Value &jvad : jva) {
+			pts.push_back({ jvad["x"].asInt(), jvad["y"].asInt() });
+		}
+		return new Chessman(jv["id"].asInt(), pts, "");
 	}
 };
 

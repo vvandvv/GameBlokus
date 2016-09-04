@@ -11,7 +11,11 @@ public:
 	GameBoard *mGameBoard;
 public:
 	Player(int pid, GameBoard *gb, const Point &pt) : player_id(pid), mGameBoard(gb), birth_place(pt) {}
+	~Player() {
+		delete chess_box;
+	}
 public:
+	//玩家得到地图上所有可以走的位置
 	Points getAvailablePoints() const {
 		Points res;
 		if (chess_box->getChessNum() == ConstDefs::CHESSMAN_TOTAL) {
@@ -21,6 +25,7 @@ public:
 		}
 		return res;
 	}
+	//玩家选择一颗棋子放置在棋盘上
 	void putChess() const {
 		Points pos = getAvailablePoints();
 		size_t posl;

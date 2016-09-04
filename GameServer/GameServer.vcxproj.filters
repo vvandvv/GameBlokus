@@ -36,6 +36,9 @@
     <ClCompile Include="..\src\game_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\socketman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third_party\jsoncpp\include\json\allocator.h">

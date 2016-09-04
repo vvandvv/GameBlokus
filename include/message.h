@@ -14,7 +14,7 @@ public:
 	string mMsgName;
 public:
 	Message(const string &name) : mMsgName(name) {}
-	virtual Json::Value toJsonObj() const = 0; 
+	virtual Json::Value toJsonObj() const = 0;
 };
 
 /**
@@ -23,11 +23,57 @@ public:
 class MsgRegist : public Message {
 	const TeamInfo *team;
 public:
+	MsgRegist(const Json::Value &jv) : Message("registration"), team(new TeamInfo(jv["team_name"].asString(), jv["team_id"].asInt())) {}
 	MsgRegist(const TeamInfo *ti) : Message("registration"), team(ti) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
 		jv["msg_data"] = team->toJsonObj();
 		return jv;
+	}
+	const TeamInfo *getTeamInfo() const {
+		return team;
+	}
+};
+
+/**
+ * server msg
+ */
+class MsgInquire : public Message {
+	int hand_no;
+	int team_id;
+	int player_id;
+public:
+	MsgInquire(const Json::Value &jv) : Message("inquire"), hand_no(jv["hand_no"].asInt()), team_id(jv["team_id"].asInt()), player_id(jv["player_id"].asInt()) {}
+	MsgInquire(int hn, int ti, int pi) : Message("inquire"), hand_no(hn), team_id(ti), player_id(pi) {}
+	Json::Value toJsonObj() const {
+		Json::Value jv = Message::toJsonObj();
+		Json::Value jvb;
+		jvb["hand_no"] = hand_no;
+		jvb["team_id"] = team_id;
+		jvb["player_id"] = player_id;
+		jv["msg_data"] = jvb;
+		return jv;
+	}
+};
+
+/**
+ * client msg
+ */
+class MsgAction : public Message {
+	Json::Value inquire;
+	Json::Value chess;
+public:
+	MsgAction() : Message("action") {}
+	MsgAction(const MsgInquire &iqr, const Json::Value &jv) : Message("action"), inquire(iqr.toJsonObj()), chess(jv) {}
+	Json::Value toJsonObj() const {
+		Json::Value jv = Message::toJsonObj();
+		Json::Value jvb = inquire["msg_data"];
+		jvb["chessman"] = chess;
+		jv["msg_data"] = jvb;
+		return jv;
+	}
+	Json::Value getChessInfo() const {
+		return chess;
 	}
 };
 
@@ -35,10 +81,10 @@ public:
  * server msg
  */
 class MsgGameStart : public Message {
-	TeamInfo *const *info;
+	const TeamInfo *const *info;
 	Point birth_point[ConstDefs::PLAYERS_NUM] = { {0, 0}, {0, 19}, {19, 19}, {19, 0} };
 public:
-	MsgGameStart(TeamInfo *const infos[]) : Message("game_start"), info(infos) {}
+	MsgGameStart(const TeamInfo *const infos[]) : Message("game_start"), info(infos) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
 		Json::Value ja;
@@ -50,6 +96,32 @@ public:
 			ja.append(jav);
 		}
 		jv["msg_date"] = ja;
+		return jv;
+	}
+};
+
+class MsgNotification : public Message {
+	Json::Value action;
+public:
+	MsgNotification(const Json::Value &actJson) : Message("notification"), action(actJson) {}
+	Json::Value toJsonObj() const {
+		Json::Value jv = Message::toJsonObj();
+		jv["msg_data"] = action["msg_data"];
+		return jv;
+	}
+};
+
+/**
+ * common
+ */
+class MsgError : public Message {
+	string reason;
+public:
+	MsgError() : Message("error") {}
+	MsgError(const string &rs) : Message("error"), reason(rs) {}
+	Json::Value toJsonObj() const {
+		Json::Value jv = Message::toJsonObj();
+		jv["msg_data"] = reason;
 		return jv;
 	}
 };

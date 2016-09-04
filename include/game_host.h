@@ -8,12 +8,14 @@
 #include "team_info.h"
 #include "socketman.h"
 #include "message.h"
+#include "game_board.h"
 
 class GameHost {
 public:
 	SOCKET mServer;
 	SOCKET mSockets[ConstDefs::CONNECTION_POOL_SIZE] = { 0 };
-	TeamInfo *mTeams[ConstDefs::CONNECTION_POOL_SIZE] = { nullptr };
+	const TeamInfo *mTeams[ConstDefs::CONNECTION_POOL_SIZE] = { nullptr };
+	GameBoard *mGameBoard;
 private:
 	int last_index = 0;
 	Json::Reader reader;
@@ -29,22 +31,20 @@ public:
 				closesocket(acc);
 				continue;
 			}
-			recv(acc, msg_header_buf, sizeof(msg_header_buf), 0);
-			int len = atoi(msg_header_buf);
-			char *receiveMessage = (char*)malloc(len + 1);
-			int ret = recv(acc, receiveMessage, len, 0);
-			receiveMessage[len] = '\0';
-			if (ret != len) {
+			const Message *msg = Socketman::recvMessage(acc);
+			const MsgRegist *msg_reg = dynamic_cast<const MsgRegist*>(msg);
+			if (msg_reg == nullptr) {
+				printf("%s\n", msg->toJsonObj().toStyledString().c_str());
 				continue;
 			}
-			root.clear();
-			reader.parse(receiveMessage, root, false);
-			if (root["msg_name"].asString() == "registration") {
-				mTeams[last_index] = TeamInfo::perseFromJson(root["msg_data"]);
-				mSockets[last_index] = acc;
-				++last_index;
-				printf("receive message:%s\n", root.toStyledString().c_str());
+			else {
+				printf("%s\n", msg_reg->toJsonObj().toStyledString().c_str());
 			}
+			int time_out = 500;
+			setsockopt(acc, SOL_SOCKET, SO_RCVTIMEO, (char *)&time_out, sizeof(int));
+			mSockets[last_index] = acc;
+			mTeams[last_index] = msg_reg->getTeamInfo();
+			++last_index;
 		}
 	}
 	void dropTeam(int index) {
@@ -62,9 +62,29 @@ public:
 		}
 	}
 	void runGame() const {
-		//依次询问
-		//收消息，超时 500ms
-		//依次通知
+		static int hand_no = 0;
+		while (true) {
+			for (int i = 0; i < ConstDefs::PLAYERS_NUM; ++i) {
+				int player_id = i + 1;
+				Socketman::sendMessage(MsgInquire(hand_no++, mTeams[i % 2]->mTeamId, i+1), mSockets[i]);
+				const Message *msg = Socketman::recvMessage(mSockets[i]);
+				const MsgAction *msg_act = dynamic_cast<const MsgAction*>(msg);
+				if (msg_act == nullptr) {
+					printf("%s\n", msg->toJsonObj().toStyledString().c_str());
+					for (SOCKET sk : mSockets) {
+						Socketman::sendMessage(MsgNotification(Json::Value()), sk);
+					}
+				} else {
+					bool res = mGameBoard->putChess(i + 1, Chessman::perseFromJson(msg_act->getChessInfo()));
+					if (res) {
+						mGameBoard->showInScreen();
+						for (SOCKET sk : mSockets) {
+							Socketman::sendMessage(MsgNotification(msg_act->toJsonObj()), sk);
+						}
+					}
+				}
+			}
+		}
 	}
 	void stopGame() const {
 		//依次发出停止消息
