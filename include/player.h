@@ -2,6 +2,7 @@
 
 #include "game_board.h"
 #include "chessbox.h"
+#include "message.h"
 
 class Player {
 	ChessBox *const chess_box = new ChessBox();
@@ -48,6 +49,31 @@ public:
 			mGameBoard->showInScreen();
 			printf("\n");
 			break;
+		}
+	}
+	MsgAction *getAction(const MsgInquire *iqr) const {
+		Points pos = getAvailablePoints();
+		Chessman::ShapeSet fs;
+		//遍历所有的棋子
+		for (ChessBox::ChessIter chess_iter = chess_box->begin(); chess_iter != chess_box->end(); ) {
+			//遍历所有可放置的位置
+			for (const Point &ips : pos) {
+				//得到在该位置所有可能的形状
+				fs = mGameBoard->getValidShapes(player_id, *chess_iter, ips.x, ips.y);
+				//如果找到可以放的形状，就不再寻找
+				if (!fs.empty()) {
+					break;
+				}
+				//如果这个位置不能放该棋子，那么尝试下一个位置
+			}
+			//如果没有任何位置能放置该棋子，就继续下一颗棋子
+			if (fs.empty()) {
+				++chess_iter;
+				continue;
+			}
+			//如果找到这颗棋子能够放的第一个位置，就取所有可放置形状的第一个
+			(*chess_iter)->shape = *fs.begin();
+			return new MsgAction(iqr, *chess_iter);
 		}
 	}
 };

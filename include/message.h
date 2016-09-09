@@ -6,6 +6,7 @@ using std::string;
 #include "json\json.h"
 
 #include "const_defs.h"
+#include "chessman.h"
 #include "point.h"
 #include "team_info.h"
 
@@ -42,6 +43,7 @@ class MsgInquire : public Message {
 	int hand_no;
 	int team_id;
 	int player_id;
+	friend class MsgAction;
 public:
 	MsgInquire(const Json::Value &jv) : Message("inquire"), hand_no(jv["hand_no"].asInt()), team_id(jv["team_id"].asInt()), player_id(jv["player_id"].asInt()) {}
 	MsgInquire(int hn, int ti, int pi) : Message("inquire"), hand_no(hn), team_id(ti), player_id(pi) {}
@@ -60,23 +62,34 @@ public:
  * client msg
  */
 class MsgAction : public Message {
-	Json::Value inquire;
-	Json::Value chess;
+	int hand_no;
+	int team_id;
+	int player_id;
+	const Chessman *chess;
 public:
-	MsgAction() : Message("action") {}
-	MsgAction(const MsgInquire &iqr, const Json::Value &jv) : Message("action"), inquire(iqr.toJsonObj()), chess(jv) {}
+	MsgAction(const Json::Value &jv) : Message("action"), hand_no(jv["hand_no"].asInt()), team_id(jv["team_id"].asInt()), player_id(jv["player_id"].asInt()), chess(Chessman::perseFromJson(jv["chessman"])) {}
+	MsgAction(const MsgInquire *miqr, const Chessman *chs) : Message("action"), hand_no(miqr->hand_no), team_id(miqr->team_id), player_id(miqr->player_id), chess(chs) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
-		Json::Value jvb = inquire["msg_data"];
-		jvb["chessman"] = chess;
+		Json::Value jvb;
+		jvb["hand_no"] = hand_no;
+		jvb["team_id"] = team_id;
+		jvb["player_id"] = player_id;
+		jvb["chessman"] = chess->toJsonObj();
 		jv["msg_data"] = jvb;
 		return jv;
 	}
-	Json::Value getChessInfo() const {
+	const Chessman *getChess() const {
 		return chess;
+	}
+public:
+	~MsgAction() {
+		delete chess;
 	}
 };
 
+
+class Player;
 /**
  * server msg
  */
@@ -98,6 +111,7 @@ public:
 		jv["msg_date"] = ja;
 		return jv;
 	}
+	vector<Player*> getPlayers() const;
 };
 
 class MsgNotification : public Message {

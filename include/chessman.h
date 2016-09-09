@@ -41,11 +41,15 @@ public:
 		return mShapes.end();
 	}
 	typedef set<Shape, Cmp> ShapeSet;
+	//可选的所有形状
 	ShapeSet mShapes;
 public:
 	int chess_id;
+	//初始的点
 	Points points;
 	string contact;
+	//最终选定的形状
+	Shape shape;
 private:
 	Chessman(int cid, const Points &pts, const string &ct) : chess_id(cid), points(pts), contact(ct) {
 		Points cps = _getContactPoints();
@@ -171,6 +175,19 @@ public:
 			pts.push_back({ jvad["x"].asInt(), jvad["y"].asInt() });
 		}
 		return new Chessman(jv["id"].asInt(), pts, "");
+	}
+	Json::Value toJsonObj() const {
+		Json::Value jv;
+		jv["id"] = chess_id;
+		Json::Value jva;
+		Json::Value jvad;
+		for (const Point &pt : points) {
+			jvad["x"] = pt.x;
+			jvad["y"] = pt.y;
+			jva.append(jvad);
+		}
+		jv["squareness"] = jva;
+		return jv;
 	}
 };
 

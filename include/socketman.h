@@ -9,9 +9,6 @@ class Socketman {
 	static char msg_header_buf[ConstDefs::MSG_HEADER_LENGTH];
 	static Json::Reader reader;
 	static Json::Value root;
-	static MsgError msg_wc;
-	static MsgRegist msg_reg;
-	static MsgAction msg_act;
 public:
 	static SOCKET createServerSocket(const char *ip, u_short port) {
 		WSADATA wsaData;
@@ -97,7 +94,7 @@ public:
 			return new MsgRegist(root["msg_data"]);
 		}
 		else if (msg_name == "action") {
-			return new MsgAction(root["msg_data"], root["msg_data"]["chessman"]);
+			return new MsgAction(root["msg_data"]);
 		}
 		else {
 			return new MsgError("unknown message.");

@@ -10,5 +10,7 @@ int main()
 	//Tester::registTeam();
 	GameClient gc("127.0.0.1", 6000);
 	gc.registTeam("god", 1001);
+	gc.gameStart();
+	gc.gameRun();
 	cin.get();
 }

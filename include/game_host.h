@@ -75,7 +75,7 @@ public:
 						Socketman::sendMessage(MsgNotification(Json::Value()), sk);
 					}
 				} else {
-					bool res = mGameBoard->putChess(i + 1, Chessman::perseFromJson(msg_act->getChessInfo()));
+					bool res = mGameBoard->putChess(i + 1, msg_act->getChess());
 					if (res) {
 						mGameBoard->showInScreen();
 						for (SOCKET sk : mSockets) {
