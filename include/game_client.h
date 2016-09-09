@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+using std::map; using std::make_pair;
+
 #include "team_info.h"
 #include "socketman.h"
 #include "message.h"
@@ -10,8 +13,7 @@ class GameClient {
 public:
 	SOCKET mClient;
 	const TeamInfo *mTeam;
-	GameBoard *mGameBoard;
-	vector<Player*> mPlayers;
+	map<int, const Player *> mPlayers;
 public:
 	void registTeam(const string &tname, int tid) {
 		mTeam = new TeamInfo(tname, tid);
@@ -19,26 +21,31 @@ public:
 	}
 	void gameStart() {
 		const Message *msg = Socketman::recvMessage(mClient);
-		const MsgGameStart *msg_st = dynamic_cast<const MsgGameStart*>(msg);
-		if (msg_st == nullptr) {
-		}
-		else {
-			mPlayers = msg_st->getPlayers();
-		}
-		for (Player *pl : mPlayers) {
-			pl->mGameBoard = mGameBoard;
-		}
-		printf("game_start");
+		
 	}
-	void gameRun() const {
+	void gameRun() {
 		while (true) {
 			const Message *msg = Socketman::recvMessage(mClient);
-			const MsgInquire *iqr = dynamic_cast<const MsgInquire *>(msg);
-			if (iqr == nullptr) {
-
+			string msg_name = msg->mMsgName;
+			if (msg_name == "game_start") {
+				const MsgGameStart *msg_st = dynamic_cast<const MsgGameStart*>(msg);
+				vector<Player *> pls;
+				pls = msg_st->getPlayers();
+				for (Player *pl : pls) {
+					mPlayers.insert(std::make_pair(pl->getPlayerId(), pl));
+				}
 			}
-			else {
+			else if (msg_name == "inquire") {
+				const MsgInquire *iqr = dynamic_cast<const MsgInquire *>(msg);
+				RoundInfo rinfo = iqr->getRoundInfo();
+				Chessman *chess = mPlayers[rinfo.mPlayerId]->getNextChess(iqr);
+				Socketman::sendMessage(MsgAction(rinfo, chess), mClient);
+			}
+			else if (msg_name == "notification") {
 
+			} 
+			else {
+				//game_over
 			}
 		}
 	}

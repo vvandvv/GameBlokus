@@ -15,7 +15,7 @@ public:
 	SOCKET mServer;
 	SOCKET mSockets[ConstDefs::CONNECTION_POOL_SIZE] = { 0 };
 	const TeamInfo *mTeams[ConstDefs::CONNECTION_POOL_SIZE] = { nullptr };
-	GameBoard *mGameBoard;
+	GameBoard *mGameBoard = new GameBoard();
 private:
 	int last_index = 0;
 	Json::Reader reader;
@@ -66,8 +66,9 @@ public:
 		while (true) {
 			for (int i = 0; i < ConstDefs::PLAYERS_NUM; ++i) {
 				int player_id = i + 1;
-				Socketman::sendMessage(MsgInquire(hand_no++, mTeams[i % 2]->mTeamId, i+1), mSockets[i]);
-				const Message *msg = Socketman::recvMessage(mSockets[i]);
+				int con_id = i % 2;
+				Socketman::sendMessage(MsgInquire(hand_no++, mTeams[con_id]->mTeamId, player_id), mSockets[con_id]);
+				const Message *msg = Socketman::recvMessage(mSockets[con_id]);
 				const MsgAction *msg_act = dynamic_cast<const MsgAction*>(msg);
 				if (msg_act == nullptr) {
 					printf("%s\n", msg->toJsonObj().toStyledString().c_str());

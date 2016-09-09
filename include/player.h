@@ -9,6 +9,10 @@ class Player {
 	const int player_id;
 	const Point birth_place;
 public:
+	int getPlayerId() const {
+		return player_id;
+	}
+public:
 	GameBoard *mGameBoard;
 public:
 	Player(int pid, GameBoard *gb, const Point &pt) : player_id(pid), mGameBoard(gb), birth_place(pt) {}
@@ -51,7 +55,7 @@ public:
 			break;
 		}
 	}
-	MsgAction *getAction(const MsgInquire *iqr) const {
+	Chessman *getNextChess(const MsgInquire *iqr) const {
 		Points pos = getAvailablePoints();
 		Chessman::ShapeSet fs;
 		//遍历所有的棋子
@@ -73,7 +77,7 @@ public:
 			}
 			//如果找到这颗棋子能够放的第一个位置，就取所有可放置形状的第一个
 			(*chess_iter)->shape = *fs.begin();
-			return new MsgAction(iqr, *chess_iter);
+			return *chess_iter;
 		}
 	}
 };

@@ -152,6 +152,7 @@
     <ClInclude Include="..\include\pane.h" />
     <ClInclude Include="..\include\player.h" />
     <ClInclude Include="..\include\point.h" />
+    <ClInclude Include="..\include\round_info.h" />
     <ClInclude Include="..\include\socketman.h" />
     <ClInclude Include="..\include\team_info.h" />
     <ClInclude Include="..\include\tester.h" />

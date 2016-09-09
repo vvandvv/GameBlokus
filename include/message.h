@@ -9,6 +9,7 @@ using std::string;
 #include "chessman.h"
 #include "point.h"
 #include "team_info.h"
+#include "round_info.h"
 
 class Message {
 public:
@@ -40,20 +41,17 @@ public:
  * server msg
  */
 class MsgInquire : public Message {
-	int hand_no;
-	int team_id;
-	int player_id;
-	friend class MsgAction;
+	RoundInfo round;
 public:
-	MsgInquire(const Json::Value &jv) : Message("inquire"), hand_no(jv["hand_no"].asInt()), team_id(jv["team_id"].asInt()), player_id(jv["player_id"].asInt()) {}
-	MsgInquire(int hn, int ti, int pi) : Message("inquire"), hand_no(hn), team_id(ti), player_id(pi) {}
+	RoundInfo getRoundInfo() const {
+		return round;
+	}
+public:
+	MsgInquire(const Json::Value &jv) : Message("inquire"), round(jv) {}
+	MsgInquire(int hn, int ti, int pi) : Message("inquire"), round(hn, ti, pi) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
-		Json::Value jvb;
-		jvb["hand_no"] = hand_no;
-		jvb["team_id"] = team_id;
-		jvb["player_id"] = player_id;
-		jv["msg_data"] = jvb;
+		jv["msg_data"] = round.toJsonObj();
 		return jv;
 	}
 };
@@ -62,19 +60,14 @@ public:
  * client msg
  */
 class MsgAction : public Message {
-	int hand_no;
-	int team_id;
-	int player_id;
+	RoundInfo round;
 	const Chessman *chess;
 public:
-	MsgAction(const Json::Value &jv) : Message("action"), hand_no(jv["hand_no"].asInt()), team_id(jv["team_id"].asInt()), player_id(jv["player_id"].asInt()), chess(Chessman::perseFromJson(jv["chessman"])) {}
-	MsgAction(const MsgInquire *miqr, const Chessman *chs) : Message("action"), hand_no(miqr->hand_no), team_id(miqr->team_id), player_id(miqr->player_id), chess(chs) {}
+	MsgAction(const Json::Value &jv) : Message("action"), round(jv), chess(Chessman::perseFromJson(jv["chessman"])) {}
+	MsgAction(const RoundInfo &info, const Chessman *chs) : Message("action"), round(info), chess(chs) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
-		Json::Value jvb;
-		jvb["hand_no"] = hand_no;
-		jvb["team_id"] = team_id;
-		jvb["player_id"] = player_id;
+		Json::Value jvb = round.toJsonObj();
 		jvb["chessman"] = chess->toJsonObj();
 		jv["msg_data"] = jvb;
 		return jv;
@@ -97,7 +90,7 @@ class MsgGameStart : public Message {
 	const TeamInfo *const *info;
 	Point birth_point[ConstDefs::PLAYERS_NUM] = { {0, 0}, {0, 19}, {19, 19}, {19, 0} };
 public:
-	MsgGameStart(const TeamInfo *const infos[]) : Message("game_start"), info(infos) {}
+	MsgGameStart(const TeamInfo *const infos[] = { nullptr }) : Message("game_start"), info(infos) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
 		Json::Value ja;
@@ -108,7 +101,7 @@ public:
 			jav["birth_place"] = birth_point[i].toJsonObj();
 			ja.append(jav);
 		}
-		jv["msg_date"] = ja;
+		jv["msg_data"] = ja;
 		return jv;
 	}
 	vector<Player*> getPlayers() const;

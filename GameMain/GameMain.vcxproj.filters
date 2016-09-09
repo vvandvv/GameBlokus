@@ -90,6 +90,9 @@
     <ClInclude Include="..\include\game_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\round_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third_party\jsoncpp\src\lib_json\json_reader.cpp">

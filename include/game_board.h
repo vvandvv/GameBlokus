@@ -7,7 +7,7 @@ class GameBoard {
 	const int dirx[8] = { 1, -1,  0,  0,  1, -1,  1, -1 };
 	const int diry[8] = { 0,  0,  1, -1, -1,  1,  1, -1 };
 public:
-	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH] = { 0 };
+	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH];
 public:
 	//服务端判断能否放置棋子
 	bool canput(int pid, const Chessman *chess) {

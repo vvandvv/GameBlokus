@@ -86,10 +86,10 @@
     <ClInclude Include="..\include\point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\socketman.h">
+    <ClInclude Include="..\include\team_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\team_info.h">
+    <ClInclude Include="..\include\socketman.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
