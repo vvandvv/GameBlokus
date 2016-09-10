@@ -87,9 +87,7 @@ public:
 		return nullptr;
 	}
 	void putCurrentChess(const Chessman *chess) {
-		printf("player_id:%d, chess_id:%d\n", player_id, chess->chess_id);
 		mGameBoard->putChess(player_id, chess);
 		chess_box->removeChess(chess);
-		printf("chess num : %d\n", chess_box->getChessNum());
 	}
 };

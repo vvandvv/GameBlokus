@@ -73,6 +73,8 @@ public:
 					bool res = mGameBoard->putChess(player_id, msg_act->getChess());
 					if (res) {
 						mGameBoard->showInScreen();
+						printf("\n");
+						_sleep(1000);
 					}
 				}
 				for (SOCKET sk : mSockets) {
