@@ -43,7 +43,7 @@ public:
 			else if (msg_name == "notification") {
 				const MsgNotification *nti = dynamic_cast<const MsgNotification *>(msg);
 				RoundInfo rinfo = nti->getRoundInfo();
-				mGameBoard->putChess(rinfo.mPlayerId, nti->getChess());
+				mPlayers[rinfo.mPlayerId]->putCurrentChess(nti->getChess());
 			} 
 			else {
 				//game_over

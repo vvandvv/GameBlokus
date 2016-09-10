@@ -64,19 +64,21 @@ public:
 		string msg = MsgRegist(ti).toJsonObj().toStyledString();
 		printf("%s\n", msg.c_str());
 	}
-	static void testFlow() {
+	static void testFlow(int steps) {
 		MsgGameStart *mgs = new MsgGameStart();
 		vector<Player *> pls = mgs->getPlayers();
-		int pid = pls[0]->getPlayerId();
 		GameBoard *gb = new GameBoard();
-		pls[0]->mGameBoard = gb;
-		printf("%d\n", pid);
-		Chessman *chess = pls[0]->getNextChess(new MsgInquire(0, 1001, 1));
-		gb->updateWithChess(1, chess);
-		gb->showInScreen();
-		pls[1]->mGameBoard = gb;
-		chess = pls[1]->getNextChess(new MsgInquire(4, 1001, 2));
-		gb->updateWithChess(2, chess);
-		gb->showInScreen();
+		int pid = 0;
+		while (steps--) {
+			for (const auto &pl : pls) {
+				pl->mGameBoard = gb;
+				Chessman *chess = pl->getNextChess(new MsgInquire(0, 1001, pl->getPlayerId()));
+				MsgAction *act = new MsgAction(RoundInfo(0, 0, ++pid % 4), chess);
+				MsgNotification *nnt = new MsgNotification(act);
+				MsgNotification *nntc = new MsgNotification(nnt->toJsonObj()["msg_data"]);
+				pl->putCurrentChess(nntc->getChess());
+				gb->showInScreen();
+			}
+		}
 	}
 };
