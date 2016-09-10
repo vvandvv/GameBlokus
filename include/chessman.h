@@ -45,13 +45,12 @@ public:
 	ShapeSet mShapes;
 public:
 	int chess_id;
-	//初始的点
+	//初始的点，也是最终选定的形状
 	Points points;
+	//可以作为接触点的位置
 	string contact;
-	//最终选定的形状
-	Shape shape;
 private:
-	Chessman(int cid, const Points &pts, const string &ct) : chess_id(cid), points(pts), contact(ct) {
+	Chessman(int cid, const Points &pts, const string &ct = "") : chess_id(cid), points(pts), contact(ct) {
 		Points cps = _getContactPoints();
 		for (const Point &cp : cps) {
 			_translation(cp.x, cp.y);
@@ -151,14 +150,21 @@ private:
 	//对自身 points 做变换，平移到
 	void _translation(int x, int y) {
 		for (auto &pn : points) {
-			pn.x -= x;
-			pn.y -= y;
+			pn.x += x;
+			pn.y += y;
+		}
+	}
+public:
+	void translatePoints(int x, int y) {
+		for (auto &pn : points) {
+			pn.x += x;
+			pn.y += y;
 		}
 	}
 private:
 	Shape _getContactPoints() const {
 		static Shape res;
-		if (res.size() == 0) {
+		if (res.size() == 0 && contact.size() != 0) {
 			for (int ii = 0; ii < points.size(); ++ii) {
 				if (contact[ii] == '1') {
 					res.push_back(points[ii]);
@@ -174,7 +180,7 @@ public:
 		for (const Json::Value &jvad : jva) {
 			pts.push_back({ jvad["x"].asInt(), jvad["y"].asInt() });
 		}
-		return new Chessman(jv["id"].asInt(), pts, "");
+		return new Chessman(jv["id"].asInt(), pts);
 	}
 	Json::Value toJsonObj() const {
 		Json::Value jv;

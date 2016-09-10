@@ -103,6 +103,9 @@ public:
 		else if (msg_name == "inquire") {
 			return new MsgInquire(root["msg_data"]);
 		}
+		else if (msg_name == "notification") {
+			return new MsgNotification(root["msg_data"]);
+		}
 		else {
 			return new MsgError("unknown message.");
 		}

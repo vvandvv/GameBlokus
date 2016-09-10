@@ -13,15 +13,12 @@ class GameClient {
 public:
 	SOCKET mClient;
 	const TeamInfo *mTeam;
-	map<int, const Player *> mPlayers;
+	GameBoard *mGameBoard;
+	map<int, Player *> mPlayers;
 public:
 	void registTeam(const string &tname, int tid) {
 		mTeam = new TeamInfo(tname, tid);
 		Socketman::sendMessage(MsgRegist(mTeam), mClient);
-	}
-	void gameStart() {
-		const Message *msg = Socketman::recvMessage(mClient);
-		
 	}
 	void gameRun() {
 		while (true) {
@@ -29,9 +26,11 @@ public:
 			string msg_name = msg->mMsgName;
 			if (msg_name == "game_start") {
 				const MsgGameStart *msg_st = dynamic_cast<const MsgGameStart*>(msg);
+				mGameBoard = new GameBoard();
 				vector<Player *> pls;
 				pls = msg_st->getPlayers();
 				for (Player *pl : pls) {
+					pl->mGameBoard = mGameBoard;
 					mPlayers.insert(std::make_pair(pl->getPlayerId(), pl));
 				}
 			}
@@ -42,7 +41,9 @@ public:
 				Socketman::sendMessage(MsgAction(rinfo, chess), mClient);
 			}
 			else if (msg_name == "notification") {
-
+				const MsgNotification *nti = dynamic_cast<const MsgNotification *>(msg);
+				RoundInfo rinfo = nti->getRoundInfo();
+				mGameBoard->putChess(rinfo.mPlayerId, nti->getChess());
 			} 
 			else {
 				//game_over

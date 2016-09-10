@@ -58,6 +58,8 @@ public:
 	Chessman *getNextChess(const MsgInquire *iqr) const {
 		Points pos = getAvailablePoints();
 		Chessman::ShapeSet fs;
+		ChessBox::ChessIter res;
+		int ptx, pty;
 		//遍历所有的棋子
 		for (ChessBox::ChessIter chess_iter = chess_box->begin(); chess_iter != chess_box->end(); ) {
 			//遍历所有可放置的位置
@@ -66,6 +68,7 @@ public:
 				fs = mGameBoard->getValidShapes(player_id, *chess_iter, ips.x, ips.y);
 				//如果找到可以放的形状，就不再寻找
 				if (!fs.empty()) {
+					ptx = ips.x, pty = ips.y;
 					break;
 				}
 				//如果这个位置不能放该棋子，那么尝试下一个位置
@@ -76,8 +79,10 @@ public:
 				continue;
 			}
 			//如果找到这颗棋子能够放的第一个位置，就取所有可放置形状的第一个
-			(*chess_iter)->shape = *fs.begin();
+			(*chess_iter)->points = *fs.begin();
+			(*chess_iter)->translatePoints(ptx, pty);
 			return *chess_iter;
 		}
+		return nullptr;
 	}
 };

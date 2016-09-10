@@ -75,6 +75,9 @@ public:
 	const Chessman *getChess() const {
 		return chess;
 	}
+	RoundInfo getRoundInfo() const {
+		return round;
+	}
 public:
 	~MsgAction() {
 		delete chess;
@@ -108,13 +111,21 @@ public:
 };
 
 class MsgNotification : public Message {
-	Json::Value action;
+	const MsgAction *action;
 public:
-	MsgNotification(const Json::Value &actJson) : Message("notification"), action(actJson) {}
+	MsgNotification(const Json::Value &jv) : Message("notification"), action(new MsgAction(jv)) {}
+	MsgNotification(const MsgAction *act) : Message("notification"), action(act) {}
 	Json::Value toJsonObj() const {
 		Json::Value jv = Message::toJsonObj();
-		jv["msg_data"] = action["msg_data"];
+		jv["msg_data"] = action->toJsonObj()["msg_data"];
 		return jv;
+	}
+public:
+	const Chessman *getChess() const {
+		return action->getChess();
+	}
+	RoundInfo getRoundInfo() const {
+		return action->getRoundInfo();
 	}
 };
 

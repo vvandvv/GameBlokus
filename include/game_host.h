@@ -71,18 +71,15 @@ public:
 				const Message *msg = Socketman::recvMessage(mSockets[con_id]);
 				const MsgAction *msg_act = dynamic_cast<const MsgAction*>(msg);
 				if (msg_act == nullptr) {
-					printf("%s\n", msg->toJsonObj().toStyledString().c_str());
-					for (SOCKET sk : mSockets) {
-						Socketman::sendMessage(MsgNotification(Json::Value()), sk);
-					}
+					printf("server not receive action.\n");
 				} else {
-					bool res = mGameBoard->putChess(i + 1, msg_act->getChess());
+					bool res = mGameBoard->putChess(player_id, msg_act->getChess());
 					if (res) {
 						mGameBoard->showInScreen();
-						for (SOCKET sk : mSockets) {
-							Socketman::sendMessage(MsgNotification(msg_act->toJsonObj()), sk);
-						}
 					}
+				}
+				for (SOCKET sk : mSockets) {
+					Socketman::sendMessage(MsgNotification(msg_act), sk);
 				}
 			}
 		}

@@ -11,7 +11,7 @@ Json::Value Message::toJsonObj() const {
 vector<Player*> MsgGameStart::getPlayers() const {
 	vector<Player*> res(ConstDefs::PLAYERS_NUM, nullptr);
 	for (int i = 0; i < ConstDefs::PLAYERS_NUM; ++i) {
-		res[i] = new Player(i + 1, new GameBoard(), birth_point[i]);
+		res[i] = new Player(i + 1, nullptr, birth_point[i]);
 	}
 	return res;
 }
