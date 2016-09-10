@@ -4,6 +4,7 @@ using std::cin; using std::cout; using std::endl;
 #include "game_client.h"
 
 #include "tester.h"
+#include "chessman.h"
 
 int main()
 {

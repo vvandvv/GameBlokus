@@ -32,16 +32,16 @@ public:
 	}
 public:
 	void removeChess(const ChessIter &iter) {
-		delete *iter;
 		mChesses.erase(iter);
 	}
 	void removeChess(const Chessman *chess) {
 		ChessIter iter = mChesses.find(const_cast<Chessman *>(chess));
-		printf("finding chess...\n");
+		//函数 erase() 本身就会调用析构函数
 		if (iter != mChesses.end()) {
-			printf("chess found.\n");
-			delete *iter;
 			mChesses.erase(iter);
+		}
+		else {
+			printf("not find chess : %d\n", chess->chess_id);
 		}
 	}
 	size_t getChessNum() const {

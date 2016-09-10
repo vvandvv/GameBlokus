@@ -37,9 +37,6 @@ public:
 				printf("%s\n", msg->toJsonObj().toStyledString().c_str());
 				continue;
 			}
-			else {
-				printf("%s\n", msg_reg->toJsonObj().toStyledString().c_str());
-			}
 			int time_out = 500;
 			setsockopt(acc, SOL_SOCKET, SO_RCVTIMEO, (char *)&time_out, sizeof(int));
 			mSockets[last_index] = acc;

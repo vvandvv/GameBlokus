@@ -5,6 +5,7 @@
 #include "message.h"
 
 class Player {
+public:
 	ChessBox *const chess_box = new ChessBox();
 	const int player_id;
 	const Point birth_place;
@@ -89,5 +90,6 @@ public:
 		printf("player_id:%d, chess_id:%d\n", player_id, chess->chess_id);
 		mGameBoard->putChess(player_id, chess);
 		chess_box->removeChess(chess);
+		printf("chess num : %d\n", chess_box->getChessNum());
 	}
 };

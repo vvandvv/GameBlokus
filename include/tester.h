@@ -73,10 +73,7 @@ public:
 			for (const auto &pl : pls) {
 				pl->mGameBoard = gb;
 				Chessman *chess = pl->getNextChess(new MsgInquire(0, 1001, pl->getPlayerId()));
-				MsgAction *act = new MsgAction(RoundInfo(0, 0, ++pid % 4), chess);
-				MsgNotification *nnt = new MsgNotification(act);
-				MsgNotification *nntc = new MsgNotification(nnt->toJsonObj()["msg_data"]);
-				pl->putCurrentChess(nntc->getChess());
+				pl->putCurrentChess(chess);
 				gb->showInScreen();
 			}
 		}

@@ -69,7 +69,6 @@ public:
 	static void sendMessage(const Message &msg, SOCKET socket) {
 		Json::Value jv = msg.toJsonObj();
 		string json_msg = jv.toStyledString();
-		printf("%s\n", json_msg.c_str());
 		int len = json_msg.length();
 		char *buf = (char*)malloc(len + 1 + ConstDefs::MSG_HEADER_LENGTH);
 		sprintf(buf, "%05d%s", len, json_msg.c_str());

@@ -78,10 +78,6 @@ public:
 	RoundInfo getRoundInfo() const {
 		return round;
 	}
-public:
-	~MsgAction() {
-		delete chess;
-	}
 };
 
 
