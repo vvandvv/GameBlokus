@@ -1,15 +1,13 @@
-#include <iostream>
-using std::cout; using std::endl; using std::cin;
-
 #include "game_host.h"
-#include "socketman.h"
 
-int main() {
-	GameHost gh("127.0.0.1", 6000);
+int main(int argc, char *const argv[]) {
+	if (argc < 3) {
+		printf("GameServer.exe [ip] [port]");
+	}
+	GameHost gh(argv[1], atoi(argv[2]) /*"127.0.0.1", 6000*/);
 	gh.acceptTeams();
 	gh.startGame();
 	gh.runGame();
 	gh.stopGame();
-	cin.get();
 	return 0;
 }

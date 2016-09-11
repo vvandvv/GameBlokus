@@ -69,9 +69,6 @@
     <ClInclude Include="..\include\message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\pane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\player.h">
       <Filter>Header Files</Filter>
     </ClInclude>

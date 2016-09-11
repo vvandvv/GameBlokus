@@ -1,6 +1,6 @@
 #pragma once
 
-#include <winsock2.h>
+#include <Winsock2.h>
 #pragma comment(lib,"ws2_32.lib")
 
 #include "message.h"

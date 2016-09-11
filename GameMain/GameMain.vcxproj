@@ -149,7 +149,6 @@
     <ClInclude Include="..\include\game_board.h" />
     <ClInclude Include="..\include\game_client.h" />
     <ClInclude Include="..\include\message.h" />
-    <ClInclude Include="..\include\pane.h" />
     <ClInclude Include="..\include\player.h" />
     <ClInclude Include="..\include\point.h" />
     <ClInclude Include="..\include\round_info.h" />

@@ -1,19 +1,12 @@
-#include <iostream>
-using std::cin; using std::cout; using std::endl;
-
 #include "game_client.h"
 
-#include "tester.h"
-#include "chessman.h"
-
-int main()
+int main(int argc, char *const argv[])
 {
-	//Tester::putAllChessAtMap(1);
-	//Tester::playersAct(10);
-	//Tester::registTeam();
-	//Tester::testFlow(10);
-	GameClient gc("127.0.0.1", 6000);
-	gc.registTeam("god", 1001);
+	if (argc < 4) {
+		printf("GameMain.exe [ip] [port] [team_id]");
+	}
+	GameClient gc(argv[1], atoi(argv[2]) /*"127.0.0.1", 6000*/);
+	gc.registTeam("god", atoi(argv[3]) /*"god", 1001*/);
 	gc.gameRun();
-	cin.get();
+	return 0;
 }

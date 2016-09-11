@@ -2,7 +2,6 @@
 
 #include "game_board.h"
 #include "chessbox.h"
-#include "message.h"
 
 class Player {
 public:
@@ -31,10 +30,9 @@ public:
 		}
 		return res;
 	}
-	//玩家选择一颗棋子放置在棋盘上
-	void putChess() const {
+	//玩家选择一颗棋子放置在棋盘上; 测试代码
+	void putOneChess() const {
 		Points pos = getAvailablePoints();
-		size_t posl;
 		Chessman::ShapeSet fs;
 		for (ChessBox::ChessIter chess_iter = chess_box->begin(); chess_iter != chess_box->end(); ) {
 			size_t plen = pos.size();
@@ -50,13 +48,14 @@ public:
 				continue;
 			}
 			mGameBoard->putChessAt(player_id, *chess_iter, fs.begin(), pos[i].x, pos[i].y);
-			chess_box->removeChess(chess_iter);
+			chess_box->removeChess(*chess_iter);
 			mGameBoard->showInScreen();
 			printf("\n");
 			break;
 		}
 	}
-	Chessman *getNextChess(const MsgInquire *iqr) const {
+	//计算下一步要走的棋
+	Chessman *getNextChess() const {
 		Points pos = getAvailablePoints();
 		Chessman::ShapeSet fs;
 		ChessBox::ChessIter res;
@@ -86,6 +85,7 @@ public:
 		}
 		return nullptr;
 	}
+	//把这颗棋放到棋盘上
 	void putCurrentChess(const Chessman *chess) {
 		mGameBoard->putChess(player_id, chess);
 		chess_box->removeChess(chess);

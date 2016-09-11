@@ -37,7 +37,7 @@ public:
 			else if (msg_name == "inquire") {
 				const MsgInquire *iqr = dynamic_cast<const MsgInquire *>(msg);
 				RoundInfo rinfo = iqr->getRoundInfo();
-				const Chessman *chess = mPlayers[rinfo.mPlayerId]->getNextChess(iqr);
+				const Chessman *chess = mPlayers[rinfo.mPlayerId]->getNextChess();
 				Socketman::sendMessage(MsgAction(rinfo, chess), mClient);
 			}
 			else if (msg_name == "notification") {

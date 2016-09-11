@@ -31,9 +31,6 @@ public:
 		}
 	}
 public:
-	void removeChess(const ChessIter &iter) {
-		mChesses.erase(iter);
-	}
 	void removeChess(const Chessman *chess) {
 		ChessIter iter = mChesses.find(const_cast<Chessman *>(chess));
 		//函数 erase() 本身就会调用析构函数

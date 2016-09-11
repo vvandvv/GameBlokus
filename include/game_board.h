@@ -7,7 +7,7 @@ class GameBoard {
 	const int dirx[8] = { 1, -1,  0,  0,  1, -1,  1, -1 };
 	const int diry[8] = { 0,  0,  1, -1, -1,  1,  1, -1 };
 public:
-	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH];
+	int mMap[ConstDefs::GAME_BOARD_WIDTH][ConstDefs::GAME_BOARD_WIDTH] = { 0 };
 public:
 	//服务端判断能否放置棋子
 	bool canput(int pid, const Chessman *chess) {
@@ -15,7 +15,7 @@ public:
 	}
 	//服务端把棋子放置在棋盘上
 	bool putChess(int pid, const Chessman *chess) {
-		int res = canput(pid, chess);
+		bool res = canput(pid, chess);
 		if (res) {
 			for (const Point &pt : chess->points) {
 				mMap[pt.x][pt.y] = pid;
@@ -23,7 +23,7 @@ public:
 		}
 		return res;
 	}
-	//客户端放置一颗棋子的某种样子到棋盘的（x, y）点
+	//放置一颗棋子的某种样子到棋盘的（x, y）点；测试代码
 	void putChessAt(int pid, const Chessman *chess, const Chessman::ShapeIter &shape, int x, int y) {
 		for (const Point &pt : *shape) {
 			mMap[pt.x + x][pt.y + y] = pid;
@@ -127,7 +127,7 @@ public:
 	/**
 	 * 在以（x, y）位置开始的棋盘上，显示一些点
 	 */
-	void showPosInScreen(const vector<Point> &pts, int x = 0, int y = 0) const {
+	void showPosInScreen(const Points &pts, int x = 0, int y = 0) const {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
 		GetConsoleScreenBufferInfo(hdl, &info);

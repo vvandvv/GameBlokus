@@ -2,17 +2,12 @@
 
 #include <Windows.h>
 
-#include <vector>
-using std::vector;
-
-#include <iostream>
-using std::cout; using std::endl;
-
 #include <string>
 using std::string;
-
 #include <set>
 using std::set;
+#include <bitset>
+using std::bitset;
 
 #include "const_defs.h"
 #include "point.h"
@@ -45,15 +40,18 @@ public:
 	ShapeSet mShapes;
 public:
 	int chess_id;
-	//初始的点，也是最终选定的形状
+	//初始占据的点，也是最终选定的形状
 	Points points;
 	//可以作为接触点的位置
-	string contact;
+	bitset<ConstDefs::CHESS_POINTS_MAX> contact;
 private:
 	Chessman(int cid, const Points &pts, const string &ct = "") : chess_id(cid), points(pts), contact(ct) {
-		Points cps = _getContactPoints();
-		for (const Point &cp : cps) {
-			_translation(cp.x, cp.y);
+		size_t len = pts.size();
+		for (size_t i = 0; i < len; ++i) {
+			if (!contact.test(i)) {
+				continue;
+			}
+			_translation(pts[i].x, pts[i].y);
 			for (size_t trf = 0; trf < 4; ++trf) {
 				mShapes.insert(points);
 				_flip_over();
@@ -61,44 +59,12 @@ private:
 				_flip_over();
 				_rotate();
 			}
-			_translation(-cp.x, -cp.y);
+			_translation(-pts[i].x, -pts[i].y);
 		}
-		//cout << mShapes.size() << endl;
-	}
-public: // 为了显示的一组函数
-	//把棋子显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
-	void showInScreen(bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) const {
-		Chessman::showInScreen(points, isVertical, x, y, ex, ey);
-	}
-	Chessman *transform(int trf) {
-		if (trf >= 0 && trf < 8) {
-			if (trf >= 4) {
-				_flip_over();
-			}
-			for (int ii = 0; ii < trf % 4; ++ii) {
-				_rotate();
-			}
-		}
-		return this;
-	}
-	Chessman *transformAt(int trf, size_t cn) {
-		if (trf >= 0 && trf < 8) {
-			if (trf >= 4) {
-				_flip_over();
-			}
-			for (int ii = 0; ii < trf % 4; ++ii) {
-				_rotate();
-			}
-		}
-		static Points cpn = _getContactPoints();
-		if (cn >= 0 && cn < cpn.size()) {
-			_translation(cpn[cn].x, cpn[cn].y);
-		}
-		return this;
 	}
 public:
-	//把一些点显示在 （ex, ey） 的棋盘上，原点位置在 （x，y）点
-	static void showInScreen(const Points &pns, bool isVertical = true, int x = 4, int y = 4, int ex = 9, int ey = 9) {
+	//把棋子的 points 显示在一块 (ex, ey) 大小的棋盘上，接触点画在 (x, y) 指定的点上
+	void showInScreen(bool isVertical = true, size_t x = 4, size_t y = 4, size_t ex = 9, size_t ey = 9) {
 		HANDLE hdl = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO info;
 		GetConsoleScreenBufferInfo(hdl, &info);
@@ -112,7 +78,7 @@ public:
 		}
 		SetConsoleTextAttribute(hdl, FOREGROUND_RED | FOREGROUND_INTENSITY);
 		int index = 0;
-		for (auto pn : pns) {
+		for (const auto &pn : points) {
 			BOOL res = SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (pn.x + x) * 2), (SHORT)(oxy.Y - pn.y + y) });
 			//BOOL res = SetConsoleCursorPosition(hdl, { (SHORT)(oxy.X + (pn.x + x) * 2), (SHORT)(oxy.Y + pn.y + y) });
 			if (!pn.x && !pn.y) {
@@ -142,36 +108,24 @@ private:
 	}
 	//对自身 points 做变换，左右翻转
 	void _flip_over() {
-		int x, y;
 		for (auto &pn : points) {
 			pn.x = -pn.x;
 		}
 	}
-	//对自身 points 做变换，平移到
+	//对自身 points 做变换，以 （x，y）做原点
 	void _translation(int x, int y) {
 		for (auto &pn : points) {
-			pn.x += x;
-			pn.y += y;
+			pn.x -= x;
+			pn.y -= y;
 		}
 	}
 public:
+	//把 points 平移到（x，y）位置
 	void translatePoints(int x, int y) {
 		for (auto &pn : points) {
 			pn.x += x;
 			pn.y += y;
 		}
-	}
-private:
-	Shape _getContactPoints() const {
-		static Shape res;
-		if (res.size() == 0 && contact.size() != 0) {
-			for (int ii = 0; ii < points.size(); ++ii) {
-				if (contact[ii] == '1') {
-					res.push_back(points[ii]);
-				}
-			}
-		}
-		return res;
 	}
 public:
 	static Chessman *perseFromJson(const Json::Value &jv) {
